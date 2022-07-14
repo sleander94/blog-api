@@ -7,7 +7,7 @@ var PostSchema = new Schema({
   timestamp: { type: String, required: true },
   title: { type: String, required: true },
   text: { type: String, required: true },
-  isPublic: {type: Boolean, required: false}
+  isPublic: {type: Boolean, required: true}
 });
 
 module.exports = mongoose.model('Post', PostSchema);
