@@ -1,0 +1,13 @@
+var mongoose = require('mongoose');
+
+var Schema = mongoose.Schema;
+
+var UserSchema = new Schema({
+  firstname: { type: String, required: true },
+  lastname: { type: String, required: true },
+  email: { type: String, required: true },
+  password: { type: String, required: true },
+  isAdmin: { type: Boolean, required: false },
+});
+
+module.exports = mongoose.model('User', UserSchema);
