@@ -61,3 +61,25 @@ exports.signup_post = [
     });
   },
 ];
+
+exports.login_post = (req, res, next) => {
+  passport.authenticate('local', (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).json({ message: 'Auth Failed' });
+    }
+    req.login(user, { session: false }, (err) => {
+      if (err) {
+        res.send(err);
+      }
+    });
+    const token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET);
+    return res.status(200).json({
+      message: 'Auth Passed',
+      token,
+      user,
+    });
+  })(req, res, next);
+};
