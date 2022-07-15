@@ -40,8 +40,6 @@ passport.use(
       secretOrKey: process.env.JWT_SECRET,
     },
     function (jwt_payload, done) {
-      console.log('JWT Running');
-      console.log(jwt_payload.email);
       User.findOne({ email: jwt_payload.email }, function (err, user) {
         if (err) {
           console.log('Err');
