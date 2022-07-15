@@ -28,7 +28,7 @@ exports.posts_post = [
         });
       }
       const post = new Post({
-        author: 'Hello',
+        author: user.firstname + ' ' + user.lastname,
         timestamp: new Date().toLocaleDateString(),
         title: req.body.title,
         text: req.body.text,
