@@ -1,11 +1,6 @@
 require('dotenv').config();
-const Post = require('../models/post');
-const Comment = require('../models/comment');
 const User = require('../models/user');
 const { body, validationResult } = require('express-validator');
-const async = require('async');
-const express = require('express');
-const router = express.Router();
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const bcrypt = require('bcryptjs');
