@@ -28,7 +28,7 @@ exports.posts_post = [
         });
       }
       if (!errors.isEmpty()) {
-        res.status(404).json(errors);
+        res.status(400).json(errors);
       }
       const post = new Post({
         author: user.firstname + ' ' + user.lastname,
@@ -91,8 +91,7 @@ exports.post_update = [
         });
       }
       if (!errors.isEmpty()) {
-        /////////////////////////
-        res.status(404).json(errors);
+        res.status(400).json(errors);
       }
       const post = new Post({
         _id: req.params.id,
@@ -123,25 +122,3 @@ exports.post_update = [
     })(req, res, next);
   },
 ];
-
-/* [
-  body('title', 'Enter a title').trim().isLength({ min: 1 }).escape(),
-  body('text', 'Post text is empty').trim().isLength({ min: 1 }).escape(),
-  (req, res, next) => {
-    const post = new Post({
-      _id: req.params.id,
-      author: 'Stephen Leander',
-      timestamp: new Date().toLocaleDateString(),
-      title: req.body.title,
-      text: req.body.text,
-      isPublic: req.body.isPublic,
-    });
-    Post.findByIdAndUpdate(req.params.id, post, {}, (err) => {
-      if (err) {
-        return next(err);
-      } else {
-        res.redirect(`/posts/${post._id}`);
-      }
-    });
-  },
-]; */
