@@ -2,6 +2,7 @@ const Post = require('../models/post');
 const Comment = require('../models/comment');
 const { body, validationResult } = require('express-validator');
 const async = require('async');
+const passport = require('passport');
 
 exports.posts_get = (req, res, next) => {
   Post.find({ isPublic: true }).exec((err, results) => {
@@ -16,28 +17,30 @@ exports.posts_post = [
   body('title', 'Enter a title').trim().isLength({ min: 1 }).escape(),
   body('text', 'Post text is empty').trim().isLength({ min: 1 }).escape(),
   (req, res, next) => {
-    /*   const errors = validationResult(req); */
-
-    const post = new Post({
-      author: 'Stephen Leander',
-      timestamp: new Date().toLocaleDateString(),
-      title: req.body.title,
-      text: req.body.text,
-      isPublic: req.body.isPublic,
-    });
-    /*   if (!errors.isEmpty()) {
-    if (err) {
-      return next(err)
-    }
-    res.redirect('/posts/new-post')
-  } */
-    post.save((err) => {
+    passport.authenticate('jwt', { session: false }, (err, user) => {
       if (err) {
         return next(err);
-      } else {
-        res.redirect(`/posts/${post._id}`);
       }
-    });
+      if (!user) {
+        return res.status(401).json({
+          message: 'Auth Failed',
+          reason: 'You need to be logged in to post',
+        });
+      }
+      const post = new Post({
+        author: 'Hello',
+        timestamp: new Date().toLocaleDateString(),
+        title: req.body.title,
+        text: req.body.text,
+        isPublic: req.body.isPublic,
+      });
+      post.save((err) => {
+        if (err) {
+          return next(err);
+        }
+        res.redirect(`/posts/${post._id}`);
+      });
+    })(req, res, next);
   },
 ];
 
