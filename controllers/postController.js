@@ -17,6 +17,7 @@ exports.posts_post = [
   body('title', 'Enter a title').trim().isLength({ min: 1 }).escape(),
   body('text', 'Post text is empty').trim().isLength({ min: 1 }).escape(),
   (req, res, next) => {
+    const errors = validationResult(req);
     passport.authenticate('jwt', { session: false }, (err, user) => {
       if (err) {
         return next(err);
@@ -26,6 +27,9 @@ exports.posts_post = [
           message: 'Auth Failed',
           reason: 'You need to be logged in to post',
         });
+      }
+      if (!errors.isEmpty()) {
+        res.status(404).json(errors);
       }
       const post = new Post({
         author: user.firstname + ' ' + user.lastname,
