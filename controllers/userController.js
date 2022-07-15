@@ -70,7 +70,9 @@ exports.login_post = (req, res, next) => {
         res.send(err);
       }
     });
-    const token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET);
+    const token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET, {
+      expiresIn: '1d',
+    });
     return res.status(200).json({
       message: 'Auth Passed',
       token,
@@ -79,16 +81,17 @@ exports.login_post = (req, res, next) => {
   })(req, res, next);
 };
 
-exports.protected = (req, res, next) => {
+exports.logout_post = (req, res, next) => {
   passport.authenticate('jwt', { session: false }, (err, user) => {
     if (err) {
       return next(err);
     }
     if (!user) {
-      return res.status(401).json({ message: 'Auth Failed' });
+      return res.status(401).json({
+        message: 'Auth Failed: Not logged in.',
+      });
     }
-    return res.status(200).json({
-      message: 'Yay, an authorized route!',
-    });
+    res.clearCookie('token');
+    res.send('User logged out');
   })(req, res, next);
 };
