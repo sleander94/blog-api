@@ -83,3 +83,17 @@ exports.login_post = (req, res, next) => {
     });
   })(req, res, next);
 };
+
+exports.protected = (req, res, next) => {
+  passport.authenticate('jwt', { session: false }, (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).json({ message: 'Auth Failed' });
+    }
+    return res.status(200).json({
+      message: 'Yay, an authorized route!',
+    });
+  })(req, res, next);
+};
