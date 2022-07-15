@@ -23,6 +23,7 @@ exports.signup_post = [
   }),
 
   (req, res, next) => {
+    const errors = validationResult(req);
     bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
       const user = new User({
         firstname:
@@ -44,14 +45,17 @@ exports.signup_post = [
             message: 'Email is already in use',
             user: user,
           });
-        } else {
-          user.save((err) => {
-            if (err) {
-              return next(err);
-            }
-            res.send('Created new user');
-          });
         }
+        if (!errors.isEmpty()) {
+          res.status(400).json(errors);
+        }
+
+        user.save((err) => {
+          if (err) {
+            return next(err);
+          }
+          res.send('Created new user');
+        });
       });
     });
   },
