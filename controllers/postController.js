@@ -33,6 +33,7 @@ exports.posts_post = [
       }
       const post = new Post({
         author: user.firstname + ' ' + user.lastname,
+        authorId: user._id,
         timestamp: new Date().toLocaleDateString(),
         title: req.body.title,
         text: req.body.text,
