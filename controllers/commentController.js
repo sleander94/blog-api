@@ -1,5 +1,4 @@
 const Comment = require('../models/comment');
-const Post = require('../models/post');
 const { body, validationResult } = require('express-validator');
 const passport = require('passport');
 
@@ -37,3 +36,32 @@ exports.comment_post = [
     })(req, res, next);
   },
 ];
+
+exports.comment_delete = (req, res, next) => {
+  passport.authenticate('jwt', { session: false }, (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(401).json({
+        message: 'Auth Failed: You need to be logged in to update posts.',
+      });
+    }
+    Comment.findById(req.params.commentId).exec((err, results) => {
+      if (err) {
+        return next(err);
+      }
+      if (!results.authorId.equals(user._id)) {
+        return res.status(400).json({
+          message: 'Auth Failed: You can only delete your own posts.',
+        });
+      }
+      Comment.findByIdAndDelete(req.params.commentId, (err) => {
+        if (err) {
+          return next(err);
+        }
+        res.redirect(`/posts/${results.post}`);
+      });
+    });
+  })(req, res, next);
+};
