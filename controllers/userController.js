@@ -26,12 +26,14 @@ exports.signup_post = [
     const errors = validationResult(req);
     bcrypt.hash(req.body.password, 10, (err, hashedPassword) => {
       const user = new User({
-        firstname:
-          req.body.firstname.charAt(0).toUpperCase() +
-          req.body.firstname.slice(1),
-        lastname:
-          req.body.lastname.charAt(0).toUpperCase() +
-          req.body.lastname.slice(1),
+        firstname: req.body.firstname.charAt(0)
+          ? req.body.firstname.charAt(0).toUpperCase() +
+            req.body.firstname.slice(1)
+          : '',
+        lastname: req.body.lastname.charAt(0)
+          ? req.body.lastname.charAt(0).toUpperCase() +
+            req.body.lastname.slice(1)
+          : '',
         email: req.body.email,
         password: hashedPassword,
       });
