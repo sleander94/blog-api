@@ -42,19 +42,18 @@ exports.signup_post = [
         if (results !== null) {
           user.password = req.body.password;
           return res.status(400).json({
-            message: 'Email is already in use',
+            errors: { msg: 'Email is already in use' },
             user: user,
           });
         }
         if (!errors.isEmpty()) {
-          res.status(400).json(errors);
+          res.status(400).json({ errors: errors, user: user });
         }
-
         user.save((err) => {
           if (err) {
             return next(err);
           }
-          res.send('Created new user');
+          res.redirect('/posts');
         });
       });
     });
