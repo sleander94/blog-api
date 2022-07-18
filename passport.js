@@ -42,14 +42,11 @@ passport.use(
     function (jwt_payload, done) {
       User.findOne({ email: jwt_payload.email }, function (err, user) {
         if (err) {
-          console.log('Err');
           return done(err, false);
         }
         if (user) {
-          console.log('User');
           return done(null, user);
         } else {
-          console.log('No User');
           return done(null, false);
         }
       });
