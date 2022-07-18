@@ -11,7 +11,7 @@ exports.signup_post = [
     .isLength({ min: 1 })
     .escape(),
   body('lastname', 'Lastname is required').trim().isLength({ min: 1 }).escape(),
-  body('email', 'Enter a valid email').trim().escape(),
+  body('email', 'Enter a valid email').trim().isEmail().escape(),
   body('password', 'Password must be 5 or more characters')
     .isLength({ min: 5 })
     .escape(),
@@ -46,7 +46,7 @@ exports.signup_post = [
           return res.status(400).json({ message: 'Email is already in use' });
         }
         if (!errors.isEmpty()) {
-          res.status(400).json({ message: errors });
+          res.status(400).json({ message: 'Validation error.' });
         }
         user.save((err, user) => {
           if (err) {
