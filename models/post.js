@@ -7,8 +7,8 @@ var PostSchema = new Schema({
   authorId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   timestamp: { type: String, required: true },
   title: { type: String, required: true },
-  text: { type: String, required: true },
-  isPublic: { type: Boolean, required: true },
+  problem: { type: String, required: true },
+  solution: { type: String, required: true },
 });
 
 module.exports = mongoose.model('Post', PostSchema);
