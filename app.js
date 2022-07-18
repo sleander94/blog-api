@@ -25,8 +25,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/posts', postsRouter);
+app.use('/api', indexRouter);
+app.use('/api/posts', postsRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
