@@ -15,8 +15,14 @@ exports.posts_get = (req, res, next) => {
 
 exports.posts_post = [
   body('title', 'Enter a title').trim().isLength({ min: 1 }).escape(),
-  body('text', 'Post text is empty').trim().isLength({ min: 1 }).escape(),
+  body('problem', 'Post text is empty').trim().isLength({ min: 1 }).escape(),
+  body('solution', 'Post text is empty').trim().isLength({ min: 1 }).escape(),
+  body('adminPass', 'Wrong password')
+    .trim()
+    .equals(process.env.ADMIN_PASS)
+    .escape(),
   (req, res, next) => {
+    console.log(process.env.ADMIN_PASS);
     const errors = validationResult(req);
     passport.authenticate('jwt', { session: false }, (err, user) => {
       if (err) {
@@ -28,15 +34,16 @@ exports.posts_post = [
         });
       }
       if (!errors.isEmpty()) {
-        res.status(400).json(errors);
+        return res.status(400).json({ message: 'Validation error' });
       }
       const post = new Post({
         author: user.firstname + ' ' + user.lastname,
         authorId: user._id,
         timestamp: new Date().toLocaleDateString(),
         title: req.body.title,
-        text: req.body.text,
-        isPublic: req.body.isPublic,
+        problem: req.body.problem,
+        solution: req.body.solution,
+        adminPass: req.body.adminPass,
       });
       post.save((err) => {
         if (err) {
@@ -98,7 +105,8 @@ exports.post_delete = (req, res, next) => {
 
 exports.post_update = [
   body('title', 'Enter a title').trim().isLength({ min: 1 }).escape(),
-  body('text', 'Post text is empty').trim().isLength({ min: 1 }).escape(),
+  body('problem', 'Post text is empty').trim().isLength({ min: 1 }).escape(),
+  body('solution', 'Post text is empty').trim().isLength({ min: 1 }).escape(),
   (req, res, next) => {
     const errors = validationResult(req);
     passport.authenticate('jwt', { session: false }, (err, user) => {
@@ -119,8 +127,8 @@ exports.post_update = [
         authorId: user._id,
         timestamp: new Date().toLocaleDateString(),
         title: req.body.title,
-        text: req.body.text,
-        isPublic: req.body.isPublic,
+        problem: req.body.problem,
+        solution: req.body.solution,
       });
       Post.findById(req.params.id).exec((err, results) => {
         if (err) {
