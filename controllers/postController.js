@@ -24,7 +24,7 @@ exports.posts_post = [
       }
       if (!user) {
         return res.status(401).json({
-          message: 'Auth Failed: You need to be logged in to post.',
+          message: 'You need to be logged in to post.',
         });
       }
       if (!errors.isEmpty()) {
@@ -42,7 +42,7 @@ exports.posts_post = [
         if (err) {
           return next(err);
         }
-        res.redirect(`/posts/${post._id}`);
+        return res.status(200).json({ message: 'Post created successfully.' });
       });
     })(req, res, next);
   },
@@ -52,7 +52,7 @@ exports.post_get = (req, res, next) => {
   async.parallel(
     {
       post: (cb) => {
-        Post.find({ _id: req.params.id }, cb);
+        Post.findOne({ _id: req.params.id }, cb);
       },
       comments: (cb) => {
         Comment.find({ post: req.params.id }, cb);
@@ -62,7 +62,7 @@ exports.post_get = (req, res, next) => {
       if (err) {
         return next(err);
       }
-      res.json(results);
+      res.status(200).json(results);
     }
   );
 };
@@ -74,7 +74,7 @@ exports.post_delete = (req, res, next) => {
     }
     if (!user) {
       return res.status(401).json({
-        message: 'Auth Failed: You need to be logged in to update posts.',
+        message: 'You need to be logged in to update posts.',
       });
     }
     Post.findById(req.params.id).exec((err, results) => {
@@ -82,15 +82,15 @@ exports.post_delete = (req, res, next) => {
         return next(err);
       }
       if (!results.authorId.equals(user._id)) {
-        return res.status(400).json({
-          message: 'Auth Failed: You can only delete your own posts.',
+        return res.status(401).json({
+          message: 'You can only delete your own posts.',
         });
       }
       Post.findByIdAndDelete(req.params.id, (err) => {
         if (err) {
           return next(err);
         }
-        res.redirect('/posts');
+        return res.status(200).json({ message: 'Post deleted successfully.' });
       });
     });
   })(req, res, next);
@@ -107,11 +107,11 @@ exports.post_update = [
       }
       if (!user) {
         return res.status(401).json({
-          message: 'Auth Failed: You need to be logged in to update posts.',
+          message: 'You need to be logged in to update posts.',
         });
       }
       if (!errors.isEmpty()) {
-        res.status(400).json(errors);
+        res.status(400).json({ message: errors });
       }
       const post = new Post({
         _id: req.params.id,
@@ -127,16 +127,17 @@ exports.post_update = [
           return next(err);
         }
         if (!results.authorId.equals(user._id)) {
-          return res.status(400).json({
-            message: 'Auth Failed: You can only update your own posts.',
+          return res.status(401).json({
+            message: 'You can only update your own posts.',
           });
         }
         Post.findByIdAndUpdate(req.params.id, post, {}, (err) => {
           if (err) {
             return next(err);
-          } else {
-            res.redirect(`/posts/${post._id}`);
           }
+          return res
+            .status(200)
+            .json({ message: 'Post updated successfully.' });
         });
       });
     })(req, res, next);

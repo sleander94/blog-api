@@ -43,19 +43,18 @@ exports.signup_post = [
         }
         if (results !== null) {
           user.password = req.body.password;
-          return res.status(400).json({
-            errors: { msg: 'Email is already in use' },
-            user: user,
-          });
+          return res.status(400).json({ message: 'Email is already in use' });
         }
         if (!errors.isEmpty()) {
-          res.status(400).json({ errors: errors, user: user });
+          res.status(400).json({ message: errors });
         }
-        user.save((err) => {
+        user.save((err, user) => {
           if (err) {
             return next(err);
           }
-          res.redirect('/posts');
+          return res
+            .status(200)
+            .json({ message: 'User created successfully.' });
         });
       });
     });
@@ -75,11 +74,8 @@ exports.login_post = (req, res, next) => {
         res.send(err);
       }
     });
-    const token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET, {
-      expiresIn: '1d',
-    });
+    const token = jwt.sign({ email: req.body.email }, process.env.JWT_SECRET);
     return res.status(200).json({
-      message: 'Auth Passed',
       token,
       user,
     });

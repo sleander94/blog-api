@@ -7,17 +7,18 @@ exports.comment_post = [
   (req, res, next) => {
     const errors = validationResult(req);
     passport.authenticate('jwt', { session: false }, (err, user) => {
-      console.log('hey');
       if (err) {
         return next(err);
       }
       if (!user) {
         return res.status(401).json({
-          message: 'Auth Failed: You need to be logged in to post.',
+          message: 'You need to be logged in to comment.',
         });
       }
       if (!errors.isEmpty()) {
-        res.status(400).json(errors);
+        return res.status(400).json({
+          message: 'Enter a comment before submitting',
+        });
       }
       const comment = new Comment({
         author: user.firstname + ' ' + user.lastname,
@@ -29,9 +30,10 @@ exports.comment_post = [
       comment.save((err) => {
         if (err) {
           return next(err);
-        } else {
-          res.redirect(`/posts/${comment.post}`);
         }
+        return res
+          .status(200)
+          .json({ message: 'Comment created successfully.' });
       });
     })(req, res, next);
   },
@@ -44,7 +46,7 @@ exports.comment_delete = (req, res, next) => {
     }
     if (!user) {
       return res.status(401).json({
-        message: 'Auth Failed: You need to be logged in to update posts.',
+        message: 'You need to be logged in to delete comments.',
       });
     }
     Comment.findById(req.params.commentId).exec((err, results) => {
@@ -52,15 +54,17 @@ exports.comment_delete = (req, res, next) => {
         return next(err);
       }
       if (!results.authorId.equals(user._id)) {
-        return res.status(400).json({
-          message: 'Auth Failed: You can only delete your own posts.',
+        return res.status(401).json({
+          message: 'You can only delete your own comments.',
         });
       }
       Comment.findByIdAndDelete(req.params.commentId, (err) => {
         if (err) {
           return next(err);
         }
-        res.redirect(`/posts/${results.post}`);
+        return res
+          .status(200)
+          .json({ message: 'Comment deleted successfully.' });
       });
     });
   })(req, res, next);
