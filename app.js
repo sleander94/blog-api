@@ -8,10 +8,18 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 const compression = require('compression');
 const helmet = require('helmet');
+const cors = require('cors');
 require('./passport');
 
 const indexRouter = require('./routes/index');
 const postsRouter = require('./routes/posts');
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://localhost:5000',
+  'https://sleepy-springs-58716.herokuapp.com/',
+];
 
 const app = express();
 
@@ -20,6 +28,7 @@ mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
+app.use(cors());
 app.use(compression());
 app.use(helmet());
 app.use(logger('dev'));
